@@ -10,6 +10,9 @@ class rabbitmq::params {
       $package_name     = 'rabbitmq'
       $service_name     = 'rabbitmq'
       $package_source   = ''
+      $etc_path         = '/etc'
+      $db_path          = '/var/lib/rabbitmq'
+      $plugin_root_path = '/usr/lib/rabbitmq/lib'
       $version          = '3.1.3-1'
       $base_version     = regsubst($version,'^(.*)-\d$','\1')
       # This must remain at the end as we need $base_version and $version defined first
@@ -20,6 +23,9 @@ class rabbitmq::params {
       $service_name     = 'rabbitmq-server'
       $package_provider = 'apt'
       $package_source   = ''
+      $etc_path         = '/etc'
+      $db_path          = '/var/lib/rabbitmq'
+      $plugin_root_path = '/usr/lib/rabbitmq/lib'
       $version          = '3.1.5'
     }
     'RedHat', 'SUSE': {
@@ -27,10 +33,24 @@ class rabbitmq::params {
       $package_name     = 'rabbitmq-server'
       $service_name     = 'rabbitmq-server'
       $package_provider = 'rpm'
+      $etc_path         = '/etc'
+      $db_path          = '/var/lib/rabbitmq'
+      $plugin_root_path = '/usr/lib/rabbitmq/lib'
       $version          = '3.1.5-1'
       $base_version     = regsubst($version,'^(.*)-\d$','\1')
       # This must remain at the end as we need $base_version and $version defined first.
       $package_source   = "http://www.rabbitmq.com/releases/rabbitmq-server/v${base_version}/rabbitmq-server-${version}.noarch.rpm"
+    }
+    'FreeBSD': {
+      $package_ensure   = 'installed'
+      $package_name     = 'rabbitmq'
+      $package_provider = 'pkgng'
+      $service_name     = 'rabbitmq'
+      $etc_path         = '/usr/local/etc'
+      $db_path          = '/var/db/rabbitmq'
+      $plugin_root_path = '/usr/local/lib/erlang/lib'
+      $version          = '3.3.1'
+      $base_version     = regsubst($version,'^(.*)-\d$','\1')
     }
     default: {
       fail("The ${module_name} module is not supported on an ${::osfamily} based system.")
@@ -52,16 +72,16 @@ class rabbitmq::params {
   $config                     = 'rabbitmq/rabbitmq.config.erb'
   $config_cluster             = false
   $config_mirrored_queues     = false
-  $config_path                = '/etc/rabbitmq/rabbitmq.config'
+  $config_path                = "${etc_path}/rabbitmq/rabbitmq.config"
   $config_stomp               = false
   $default_user               = 'guest'
   $default_pass               = 'guest'
   $delete_guest_user          = false
   $env_config                 = 'rabbitmq/rabbitmq-env.conf.erb'
-  $env_config_path            = '/etc/rabbitmq/rabbitmq-env.conf'
+  $env_config_path            = "${etc_path}/rabbitmq/rabbitmq-env.conf"
   $erlang_cookie              = 'EOKOWXQREETZSHFNTPEY'
   $node_ip_address            = 'UNSET'
-  $plugin_dir                 = "/usr/lib/rabbitmq/lib/rabbitmq_server-${version}/plugins"
+  $plugin_dir                 = "${plugin_root_path}/rabbitmq_server-${version}/plugins"
   $port                       = '5672'
   $ssl                        = false
   $ssl_cacert                 = 'UNSET'

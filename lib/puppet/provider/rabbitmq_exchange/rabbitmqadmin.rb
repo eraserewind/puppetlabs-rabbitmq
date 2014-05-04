@@ -1,7 +1,7 @@
 require 'puppet'
 Puppet::Type.type(:rabbitmq_exchange).provide(:rabbitmqadmin) do
 
-  commands :rabbitmqctl => '/usr/sbin/rabbitmqctl'
+  commands :rabbitmqctl => '/usr/local/sbin/rabbitmqctl'
   commands :rabbitmqadmin => '/usr/local/bin/rabbitmqadmin'
   defaultfor :feature => :posix
 

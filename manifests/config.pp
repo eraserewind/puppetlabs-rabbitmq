@@ -1,5 +1,7 @@
 class rabbitmq::config {
 
+  $db_path                    = $rabbitmq::params::db_path
+  $etc_path                   = $rabbitmq::params::etc_path
   $cluster_disk_nodes         = $rabbitmq::cluster_disk_nodes
   $cluster_node_type          = $rabbitmq::cluster_node_type
   $cluster_nodes              = $rabbitmq::cluster_nodes
@@ -14,6 +16,7 @@ class rabbitmq::config {
   $env_config_path            = $rabbitmq::env_config_path
   $erlang_cookie              = $rabbitmq::erlang_cookie
   $node_ip_address            = $rabbitmq::node_ip_address
+  $plugin_root_path           = $rabbitmq::params::plugin_root_path
   $plugin_dir                 = $rabbitmq::plugin_dir
   $port                       = $rabbitmq::port
   $service_name               = $rabbitmq::service_name
@@ -47,14 +50,14 @@ class rabbitmq::config {
     $r_cluster_nodes = $cluster_nodes
   }
 
-  file { '/etc/rabbitmq':
+  file { "${etc_path}/rabbitmq":
     ensure  => directory,
     owner   => '0',
     group   => '0',
     mode    => '0644',
   }
 
-  file { '/etc/rabbitmq/ssl':
+  file { "${etc_path}/rabbitmq/ssl":
     ensure  => directory,
     owner   => '0',
     group   => '0',
@@ -86,7 +89,7 @@ class rabbitmq::config {
 
     file { 'erlang_cookie':
       ensure  => 'present',
-      path    => '/var/lib/rabbitmq/.erlang.cookie',
+      path    => "${db_path}/rabbitmq/.erlang.cookie",
       owner   => 'rabbitmq',
       group   => 'rabbitmq',
       mode    => '0400',
@@ -101,7 +104,7 @@ class rabbitmq::config {
       # Safety check.
       if $wipe_db_on_cookie_change {
         exec { 'wipe_db':
-          command    => "puppet resource service ${service_name} ensure=stopped; rm -rf /var/lib/rabbitmq/mnesia",
+          command    => "puppet resource service ${service_name} ensure=stopped; rm -rf ${db_path}/mnesia",
           path       => '/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin',
         }
         File['erlang_cookie'] {
