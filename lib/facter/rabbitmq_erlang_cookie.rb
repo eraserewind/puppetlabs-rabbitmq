@@ -14,3 +14,15 @@ Facter.add(:rabbitmq_erlang_cookie) do
     end
   end
 end
+
+Facter.add(:rabbitmq_erlang_cookie) do
+  confine :osfamily => %w[FreeBSD]
+
+  setcode do
+    if File.exists?('/var/db/rabbitmq/.erlang.cookie')
+      File.read('/var/db/rabbitmq/.erlang.cookie')
+    else
+      nil
+    end
+  end
+end
